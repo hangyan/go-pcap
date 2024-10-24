@@ -29,23 +29,18 @@ type filterKind int
 const (
 	filterKindUnset filterKind = iota
 	filterKindHost
-	filterKindNet
 	filterKindPort
-	filterKindPortRange
 )
 
 //nolint:unused
 var kinds = map[string]filterKind{
-	"host":      filterKindHost,
-	"net":       filterKindNet,
-	"port":      filterKindPort,
-	"portrange": filterKindPortRange,
+	"host": filterKindHost,
+	"port": filterKindPort,
 }
+
 var kinds2 = map[ExpressionToken]filterKind{
-	tokenHost:      filterKindHost,
-	tokenNet:       filterKindNet,
-	tokenPort:      filterKindPort,
-	tokenPortRange: filterKindPortRange,
+	tokenHost: filterKindHost,
+	tokenPort: filterKindPort,
 }
 
 type filterDirection int

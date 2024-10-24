@@ -287,56 +287,6 @@ func (p primitive) Compile() ([]bpf.Instruction, error) {
 		}
 	}
 
-	// net
-	if p.kind == filterKindNet {
-		switch p.protocol {
-		case filterProtocolIP6:
-			inst.append(loadEtherKind)
-			inst.append(compareProtocolIP6(0, inst.skipToFail()))
-			// ignore errors as it already has been validated
-			addr, network, _ := getNetAndMask(p.id)
-			inst.append(checkIP6NetAddresses(p.direction, addr, network.Mask, inst.skipToFail(), inst.skipToSucceed())...)
-		case filterProtocolIP:
-			inst.append(loadEtherKind)
-			inst.append(compareProtocolIP4(0, inst.skipToFail()))
-			inst.append(checkIP4NetHostAddresses(p.direction, p.id, inst.skipToFail(), inst.skipToSucceed())...)
-		case filterProtocolArp:
-			inst.append(loadEtherKind)
-			inst.append(compareProtocolArp(0, inst.skipToFail()))
-			inst.append(checkIP4NetArpAddresses(p.direction, p.id, inst.skipToFail(), inst.skipToSucceed())...)
-		case filterProtocolRarp:
-			inst.append(loadEtherKind)
-			inst.append(compareProtocolRarp(0, inst.skipToFail()))
-			inst.append(checkIP4NetArpAddresses(p.direction, p.id, inst.skipToFail(), inst.skipToSucceed())...)
-		case filterProtocolUnset:
-			inst.append(loadEtherKind)
-			// more complicated. try each of several - if it is IP, next 4 are for the address
-			// ignore error since it already was validated
-			addr, network, _ := getNetAndMask(p.id)
-			if addr.To4() != nil {
-				var addressCheck uint8 = 2
-				if !bytes.Equal(network.Mask, ip4MaskFull) {
-					addressCheck++
-				}
-				if p.direction == filterDirectionSrcOrDst || p.direction == filterDirectionSrcAndDst {
-					addressCheck *= 2
-				}
-				inst.append(compareProtocolIP4(0, addressCheck))
-				// compare IP addresses
-				inst.append(checkIP4NetHostAddresses(p.direction, p.id, inst.skipToFail(), inst.skipToSucceed())...)
-				// if Arp, go to arp addresses
-				inst.append(compareProtocolArp(1, 0))
-				// if not rarp, nothing left
-				inst.append(compareProtocolRarp(0, inst.skipToFail()))
-				// compare arp/rarp addresses
-				inst.append(checkIP4NetArpAddresses(p.direction, p.id, inst.skipToFail(), inst.skipToSucceed())...)
-			} else {
-				inst.append(compareProtocolIP6(0, inst.skipToFail()))
-				inst.append(checkIP6NetAddresses(p.direction, addr, network.Mask, inst.skipToFail(), inst.skipToSucceed())...)
-			}
-		}
-	}
-
 	// unset
 	if p.kind == filterKindUnset {
 		inst.append(loadEtherKind)
@@ -474,18 +424,6 @@ func (p primitive) validate() error {
 		if _, err := findPort(p.id); err != nil {
 			return err
 		}
-	case p.kind == filterKindNet:
-		// network must be one of:
-		// - straight IP (v4 or v6)
-		// - valid CIDR, but all bits after the mask must be 0
-		addr, network, err := getNetAndMask(p.id)
-		if err != nil {
-			return err
-		}
-		masked := addr.Mask(network.Mask)
-		if !addr.Equal(masked) {
-			return fmt.Errorf("invalid network, network bits extend past mask bits: %s", p.id)
-		}
 	case p.kind == filterKindUnset && p.protocol == filterProtocolEther && p.subProtocol == filterSubProtocolUnset:
 		return fmt.Errorf("parse error")
 	}
@@ -503,10 +441,7 @@ func (p primitive) Size() uint8 {
 		instCount += p.calculateStepsKindPort()
 	case filterKindUnset:
 		instCount += p.calculateStepsKindUnset()
-	case filterKindNet:
-		instCount += p.calculateStepsKindNet()
 	}
-
 	return instCount + 2
 }
 

@@ -23,38 +23,31 @@ const (
 	tokenIllegal
 	tokenSrc
 	tokenDst
-	tokenGateway
 	tokenProto
 	tokenIP4
 	tokenIP6
-	tokenNet
 	tokenTCP
 	tokenUDP
+	tokenICMP
 	tokenID
 	tokenHost
 	tokenPort
-	tokenPortRange
-	tokenEther
 )
 
 var lexerTokens = map[string]ExpressionToken{
-	"and":       tokenAnd,
-	"or":        tokenOr,
-	"not":       tokenNot,
-	"gateway":   tokenGateway,
-	"proto":     tokenProto,
-	"ether":     tokenEther,
-	"src":       tokenSrc,
-	"dst":       tokenDst,
-	"net":       tokenNet,
-	"port":      tokenPort,
-	"host":      tokenHost,
-	"portrange": tokenPortRange,
-	"ip":        tokenIP4,
-	"ip4":       tokenIP4,
-	"ip6":       tokenIP6,
-	"tcp":       tokenTCP,
-	"udp":       tokenUDP,
+	"and":   tokenAnd,
+	"or":    tokenOr,
+	"proto": tokenProto,
+	"src":   tokenSrc,
+	"dst":   tokenDst,
+	"port":  tokenPort,
+	"host":  tokenHost,
+	"ip":    tokenIP4,
+	"ip4":   tokenIP4,
+	"ip6":   tokenIP6,
+	"tcp":   tokenTCP,
+	"udp":   tokenUDP,
+	"icmp":  tokenICMP,
 }
 
 type buffer struct {
@@ -176,10 +169,6 @@ func (e *expressionLexer) Scan() (ExpressionToken, string) {
 	case isWhitespace(ch):
 		e.unread()
 		return e.scanWhitespace(), ""
-	case ch == '(':
-		return tokenLeft, string(ch)
-	case ch == ')':
-		return tokenRight, string(ch)
 	case isAlpha(ch):
 		e.unread()
 		return e.scanWord()
@@ -306,19 +295,8 @@ tokens:
 		case tokenOr:
 			j := and(false)
 			return &j
-		case tokenLeft:
-			// start a new sub-element
-			return e.tokenBrace()
-		case tokenRight:
-			// end a sub-element
-			return p
 		case tokenNot:
 			p.negator = true
-			continue tokens
-		case tokenGateway:
-			// this really needs to use the composite of two primitives
-			p.protocol = filterProtocolEther
-			p.kind = filterKindHost
 			continue tokens
 		case tokenProto:
 			// the next word is the sub-protocol
@@ -367,11 +345,6 @@ tokens:
 			p.id = word
 		}
 	}
-}
-
-// tokenBrace process the innards of a "( ... )"
-func (e *Expression) tokenBrace() Filter {
-	return e.Compile()
 }
 
 // setPrimitiveDefaults set defaults on expressions
