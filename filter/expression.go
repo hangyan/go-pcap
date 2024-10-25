@@ -192,12 +192,12 @@ func (e *Expression) Compile() Filter {
 		switch fe.Type() {
 		case Primitive:
 			p := fe.(primitive)
-			fmt.Printf("FIND PRIM: %s", p.String())
+			fmt.Printf("\nFIND PRIM: %s", p.String())
 			setPrimitiveDefaults(&p, combo.LastPrimitive())
 			combo.filters = append(combo.filters, p)
 		case Composite:
 			c := fe.(composite)
-			fmt.Printf("FIND COMP: %s", c.String())
+			fmt.Printf("\nFIND COMP: %s", c.String())
 			combo.filters = append(combo.filters, c)
 		case Joiner:
 			// it is not a primitive, so it is a joiner
