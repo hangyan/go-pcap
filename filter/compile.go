@@ -68,6 +68,10 @@ func compareSubProtocolUDP(skipTrue, skipFalse uint8) bpf.Instruction {
 	return bpf.JumpIf{Cond: bpf.JumpEqual, Val: ipProtocolUDP, SkipFalse: skipFalse, SkipTrue: skipTrue}
 }
 
+func compareSubProtocolICMP(skipTrue, skipFalse uint8) bpf.Instruction {
+	return bpf.JumpIf{Cond: bpf.JumpEqual, Val: ipProtocolICMP, SkipFalse: skipFalse, SkipTrue: skipTrue}
+}
+
 func compareSubProtocolSctp(skipTrue, skipFalse uint8) bpf.Instruction {
 	return bpf.JumpIf{Cond: bpf.JumpEqual, Val: ipProtocolSctp, SkipFalse: skipFalse, SkipTrue: skipTrue}
 }

@@ -303,6 +303,8 @@ func (p primitive) Compile() ([]bpf.Instruction, error) {
 				inst.append(compareSubProtocolTCP(0, inst.skipToFail()))
 			case filterSubProtocolUDP:
 				inst.append(compareSubProtocolUDP(0, inst.skipToFail()))
+			case filterSubProtocolIcmp:
+				inst.append(compareSubProtocolICMP(0, inst.skipToFail()))
 			}
 		case filterProtocolIP6:
 			inst.append(compareProtocolIP6(0, inst.skipToFail()))
@@ -314,19 +316,6 @@ func (p primitive) Compile() ([]bpf.Instruction, error) {
 			}
 		case filterProtocolArp:
 			inst.append(compareProtocolArp(0, inst.skipToFail()))
-		case filterProtocolRarp:
-			inst.append(compareProtocolRarp(0, inst.skipToFail()))
-		case filterProtocolEther:
-			switch p.subProtocol {
-			case filterSubProtocolIP:
-				inst.append(compareProtocolIP4(0, inst.skipToFail()))
-			case filterSubProtocolIP6:
-				inst.append(compareProtocolIP6(0, inst.skipToFail()))
-			case filterSubProtocolArp:
-				inst.append(compareProtocolArp(0, inst.skipToFail()))
-			case filterSubProtocolRarp:
-				inst.append(compareProtocolRarp(0, inst.skipToFail()))
-			}
 		case filterProtocolUnset:
 			// kind is unset, and protocol is unset, so subprotocol must be set or it would have failed vaildation
 			switch p.subProtocol {

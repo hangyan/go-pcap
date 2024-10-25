@@ -12,6 +12,7 @@ const (
 	jumpMask                   uint32 = 0x1fff
 	ipProtocolTCP              uint32 = 0x06
 	ipProtocolUDP              uint32 = 0x11
+	ipProtocolICMP             uint32 = 0x1
 	ipProtocolSctp             uint32 = 0x84
 	ip6SourcePort              uint32 = 54
 	ip6DestinationPort         uint32 = 56

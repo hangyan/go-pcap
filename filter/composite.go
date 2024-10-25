@@ -76,7 +76,7 @@ func (c composite) String() string {
 	}
 	result := "--- COMP ---"
 	for _, item := range c.filters {
-		result += item.String() + "\n"
+		result += "\n" + item.String()
 	}
 	return result
 }
