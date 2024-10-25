@@ -74,7 +74,7 @@ func (c composite) String() string {
 	if c.filters.Len() == 1 {
 		return c.filters[0].String()
 	}
-	result := ""
+	result := "--- COMP ---"
 	for _, item := range c.filters {
 		result += item.String() + "\n"
 	}
