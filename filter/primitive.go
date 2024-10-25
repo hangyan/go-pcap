@@ -22,6 +22,10 @@ type primitive struct {
 	id          string
 }
 
+func (p primitive) String() string {
+	return fmt.Sprintf("PRIMITIVE kind: %d direction: %d protocol: %d subProto: %d id: %s", p.kind, p.direction, p.protocol, p.subProtocol, p.id)
+}
+
 func (p primitive) IsPrimitive() bool {
 	return true
 }

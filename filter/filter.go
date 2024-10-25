@@ -11,6 +11,7 @@ type Filter interface {
 	Compile() ([]bpf.Instruction, error)
 	Equal(o Filter) bool
 	Size() uint8
+	String() string
 	IsPrimitive() bool
 	Type() ElementType
 	Distill() Filter

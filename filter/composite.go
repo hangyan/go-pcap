@@ -67,6 +67,20 @@ func (c composite) Size() uint8 {
 	return size
 }
 
+func (c composite) String() string {
+	if c.filters.Len() == 0 {
+		return ""
+	}
+	if c.filters.Len() == 1 {
+		return c.filters[0].String()
+	}
+	result := ""
+	for _, item := range c.filters {
+		result += item.String() + "\n"
+	}
+	return result
+}
+
 func (c composite) IsPrimitive() bool {
 	return false
 }
