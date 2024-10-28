@@ -74,7 +74,7 @@ func (h *Handle) SetBPFFilter(expr string) error {
 
 	for _, item := range instructions {
 		if v, ok := item.(bpf.JumpIf); ok {
-			fmt.Println(v)
+			fmt.Printf("%+v\n", v)
 
 		} else {
 			fmt.Println(item)
