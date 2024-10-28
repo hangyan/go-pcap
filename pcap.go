@@ -71,6 +71,7 @@ func (h *Handle) SetBPFFilter(expr string) error {
 	if err != nil {
 		return fmt.Errorf("failed to compile filter into instructions: %v", err)
 	}
+	fmt.Println(instructions)
 	raw, err := bpf.Assemble(instructions)
 	if err != nil {
 		return fmt.Errorf("bpf assembly failed: %v", err)
