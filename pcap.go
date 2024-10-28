@@ -71,7 +71,10 @@ func (h *Handle) SetBPFFilter(expr string) error {
 	if err != nil {
 		return fmt.Errorf("failed to compile filter into instructions: %v", err)
 	}
-	fmt.Printf("\nINST : %+v\n", instructions)
+	// fmt.Printf("\nINST : %+v\n", instructions)
+	for _, item := range instructions {
+		fmt.Printf("\n%s", item)
+	}
 	raw, err := bpf.Assemble(instructions)
 	if err != nil {
 		return fmt.Errorf("bpf assembly failed: %v", err)
